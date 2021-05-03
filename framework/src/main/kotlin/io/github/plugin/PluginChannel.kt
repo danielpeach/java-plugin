@@ -6,21 +6,21 @@ import io.grpc.MethodDescriptor
 import java.util.concurrent.TimeUnit
 
 internal class PluginChannel(
-    private val delegate: ManagedChannel,
-    private val onShutdown: () -> Unit,
+  private val delegate: ManagedChannel,
+  private val onShutdown: () -> Unit,
 ) : ManagedChannel() {
   override fun authority() = delegate.authority()
 
   override fun awaitTermination(timeout: Long, unit: TimeUnit?) =
-      delegate.awaitTermination(timeout, unit)
+    delegate.awaitTermination(timeout, unit)
 
   override fun isShutdown() = delegate.isShutdown
 
   override fun isTerminated() = delegate.isTerminated
 
   override fun <RequestT : Any?, ResponseT : Any?> newCall(
-      methodDescriptor: MethodDescriptor<RequestT, ResponseT>?,
-      callOptions: CallOptions?
+    methodDescriptor: MethodDescriptor<RequestT, ResponseT>?,
+    callOptions: CallOptions?
   ) = delegate.newCall(methodDescriptor, callOptions)
 
   override fun shutdown(): ManagedChannel {

@@ -7,7 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 
 internal class TestService(private val received: Channel<Boolean>? = null) :
-    TestServiceGrpcKt.TestServiceCoroutineImplBase() {
+  TestServiceGrpcKt.TestServiceCoroutineImplBase() {
   override suspend fun send(request: Test.TestMessage): Test.TestMessage {
     received?.send(true)
     return Test.TestMessage.newBuilder().setMessage("[received] ${request.message}").build()

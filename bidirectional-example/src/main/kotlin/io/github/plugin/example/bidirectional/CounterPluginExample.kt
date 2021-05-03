@@ -11,16 +11,18 @@ import io.github.plugin.Manager
 // ./gradlew :bidirectional-example:run
 fun main() {
   val manager = Manager()
-  val client =
-      manager.start(
-          ClientConfig(
-              handshakeConfig =
-                  HandshakeConfig(
-                      magicCookieKey = "BASIC_PLUGIN",
-                      magicCookieValue = "hello",
-                      protocolVersion = 1),
-              cmd = listOf("./bidirectional-example/build/bidirectional"),
-              plugins = listOf(CounterPlugin())))
+  val client = manager.start(
+    ClientConfig(
+      handshakeConfig =
+      HandshakeConfig(
+        magicCookieKey = "BASIC_PLUGIN",
+        magicCookieValue = "hello",
+        protocolVersion = 1
+      ),
+      cmd = listOf("./bidirectional-example/build/bidirectional"),
+      plugins = listOf(CounterPlugin())
+    )
+  )
 
   val bidirectional = client.dispense<Counter>()
 

@@ -1,19 +1,19 @@
 package io.github.plugin
 
 import io.grpc.ManagedChannel
-import java.io.IOException
-import java.io.InputStream
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.io.IOException
+import java.io.InputStream
 
 class Client
 internal constructor(
-    config: ClientConfig,
-    handshake: Handshake,
-    process: Process,
-    @PublishedApi internal val plugins: List<Plugin<*>>,
-    mTLSConfig: MTLSConfig? = null,
+  config: ClientConfig,
+  handshake: Handshake,
+  process: Process,
+  @PublishedApi internal val plugins: List<Plugin<*>>,
+  mTLSConfig: MTLSConfig? = null,
 ) {
   private val scope = CoroutineScope(Dispatchers.IO)
 

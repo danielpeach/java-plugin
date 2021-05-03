@@ -5,21 +5,23 @@ import java.lang.IllegalArgumentException
 import java.time.Duration
 
 data class ClientConfig(
-    val cmd: List<String>,
-    val handshakeConfig: HandshakeConfig,
-    private val plugins: List<Plugin<*>> = emptyList(),
-    private val versionedPlugins: Map<Int, List<Plugin<*>>> = emptyMap(),
-    val startTimeout: Duration = Duration.ofMinutes(1),
-    val stdioMode: StdioMode = Log,
-    val encryptionMode: EncryptionMode = Plaintext
+  val cmd: List<String>,
+  val handshakeConfig: HandshakeConfig,
+  private val plugins: List<Plugin<*>> = emptyList(),
+  private val versionedPlugins: Map<Int, List<Plugin<*>>> = emptyMap(),
+  val startTimeout: Duration = Duration.ofMinutes(1),
+  val stdioMode: StdioMode = Log,
+  val encryptionMode: EncryptionMode = Plaintext
 ) {
   init {
     if (handshakeConfig.protocolVersion != null &&
-        versionedPlugins[handshakeConfig.protocolVersion] != null &&
-        plugins.isNotEmpty()) {
+      versionedPlugins[handshakeConfig.protocolVersion] != null &&
+      plugins.isNotEmpty()
+    ) {
       throw IllegalArgumentException(
-          "versionedPlugins[${handshakeConfig.protocolVersion}] will be overwritten. " +
-              "Either supply an empty plugins list or remove versionedPlugins[${handshakeConfig.protocolVersion}].")
+        "versionedPlugins[${handshakeConfig.protocolVersion}] will be overwritten. " +
+          "Either supply an empty plugins list or remove versionedPlugins[${handshakeConfig.protocolVersion}]."
+      )
     }
 
     if (handshakeConfig.protocolVersion == null && versionedPlugins.isEmpty()) {
@@ -36,9 +38,9 @@ data class ClientConfig(
 }
 
 data class HandshakeConfig(
-    val protocolVersion: Int? = null,
-    val magicCookieKey: String,
-    val magicCookieValue: String
+  val protocolVersion: Int? = null,
+  val magicCookieKey: String,
+  val magicCookieValue: String
 )
 
 sealed class StdioMode

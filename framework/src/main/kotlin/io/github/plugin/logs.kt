@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import java.lang.StringBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.StringBuilder
 
 private val l: Logger = LoggerFactory.getLogger("io.github.plugin.PluginLogger")
 
@@ -17,9 +17,9 @@ internal fun logPlugin(raw: String) {
 sealed class LogLine
 
 private data class StructuredLogLine(
-    @JsonProperty("@level") val level: String,
-    @JsonProperty("@message") val message: String,
-    @JsonProperty("@timestamp") val timestamp: String
+  @JsonProperty("@level") val level: String,
+  @JsonProperty("@message") val message: String,
+  @JsonProperty("@timestamp") val timestamp: String
 ) : LogLine() {
   val pairs = mutableMapOf<String, String>()
 
@@ -51,19 +51,19 @@ private fun log(parsed: LogLine, logger: Logger) {
     is UnstructuredLogLine -> logger.info(parsed.message)
     is StructuredLogLine -> {
       val formatted =
-          StringBuilder().append(parsed.message).run {
-            if (parsed.pairs.isNotEmpty()) {
-              append(" [")
-              parsed.pairs.entries.forEachIndexed { i, (key, value) ->
-                append("$key=$value")
-                if (i < parsed.pairs.size - 1) {
-                  append(", ")
-                }
+        StringBuilder().append(parsed.message).run {
+          if (parsed.pairs.isNotEmpty()) {
+            append(" [")
+            parsed.pairs.entries.forEachIndexed { i, (key, value) ->
+              append("$key=$value")
+              if (i < parsed.pairs.size - 1) {
+                append(", ")
               }
-              append("]")
             }
-            toString()
+            append("]")
           }
+          toString()
+        }
 
       when (parsed.level.toUpperCase()) {
         "DEBUG" -> logger.debug(formatted)

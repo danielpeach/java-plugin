@@ -15,14 +15,14 @@ import io.netty.channel.kqueue.KQueueServerDomainSocketChannel
 import io.netty.channel.unix.DomainSocketAddress
 import io.netty.handler.ssl.SslContextBuilder
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.measureTimedValue
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 private const val MAC_OS = "Mac OS X"
 private const val LINUX = "Linux"
@@ -34,38 +34,38 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
 
   fun clientChannel(network: String, address: String): ManagedChannel {
     if (network != UNIX) {
-      throw UnsupportedNetworkException("Network type '${network}' is not supported.")
+      throw UnsupportedNetworkException("Network type '$network' is not supported.")
     }
 
-    val (builder, shutdownHook) =
-        when (val os = System.getProperty("os.name")) {
-          MAC_OS -> {
-            val kqg = KQueueEventLoopGroup()
-            val builder =
-                NettyChannelBuilder.forAddress(DomainSocketAddress(address))
-                    .eventLoopGroup(kqg)
-                    .channelType(KQueueDomainSocketChannel::class.java)
+    val (builder, shutdownHook) = when (val os = System.getProperty("os.name")) {
+      MAC_OS -> {
+        val kqg = KQueueEventLoopGroup()
+        val builder =
+          NettyChannelBuilder.forAddress(DomainSocketAddress(address))
+            .eventLoopGroup(kqg)
+            .channelType(KQueueDomainSocketChannel::class.java)
 
-            builder to { kqg.shutdownGracefully() }
-          }
-          LINUX -> {
-            val elg = EpollEventLoopGroup()
-            val builder =
-                NettyChannelBuilder.forAddress(DomainSocketAddress(address))
-                    .eventLoopGroup(elg)
-                    .channelType(EpollDomainSocketChannel::class.java)
+        builder to { kqg.shutdownGracefully() }
+      }
+      LINUX -> {
+        val elg = EpollEventLoopGroup()
+        val builder =
+          NettyChannelBuilder.forAddress(DomainSocketAddress(address))
+            .eventLoopGroup(elg)
+            .channelType(EpollDomainSocketChannel::class.java)
 
-            builder to { elg.shutdownGracefully() }
-          }
-          else -> throw UnsupportedPlatformException("OS '${os}' is not supported.")
-        }
+        builder to { elg.shutdownGracefully() }
+      }
+      else -> throw UnsupportedPlatformException("OS '$os' is not supported.")
+    }
 
     if (mTLSConfig != null) {
       builder.sslContext(
-          GrpcSslContexts.forClient()
-              .trustManager(fingerprintTrustManagerFactoryForCert(mTLSConfig.serverCertificate))
-              .keyManager(mTLSConfig.clientKey, mTLSConfig.clientCertificate)
-              .build())
+        GrpcSslContexts.forClient()
+          .trustManager(fingerprintTrustManagerFactoryForCert(mTLSConfig.serverCertificate))
+          .keyManager(mTLSConfig.clientKey, mTLSConfig.clientCertificate)
+          .build()
+      )
     } else {
       builder.usePlaintext()
     }
@@ -73,80 +73,77 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
     return PluginChannel(builder.build()) { shutdownHook() }
   }
 
-  private val serverDir =
-      Files.createTempDirectory("plugins-").also { path ->
-        Runtime.getRuntime()
-            .addShutdownHook(
-                object : Thread() {
-                  override fun run() {
-                    path.toFile().deleteRecursively()
-                  }
-                })
-      }
+  private val serverDir = Files.createTempDirectory("plugins-").also { path ->
+    Runtime.getRuntime()
+      .addShutdownHook(
+        object : Thread() {
+          override fun run() {
+            path.toFile().deleteRecursively()
+          }
+        })
+  }
 
   private val socketCounter = AtomicInteger(0)
 
   fun server(network: String, vararg services: BindableService): Server {
     val timed = measureTimedValue {
       server(
-          network,
-          Paths.get(serverDir.toString(), "server-${socketCounter.addAndGet(1)}").toString(),
-          *services)
+        network,
+        Paths.get(serverDir.toString(), "server-${socketCounter.addAndGet(1)}").toString(),
+        *services
+      )
     }
     logger.debug(
-        "Took ${timed.duration.inMilliseconds} milliseconds to create server of type '$network'")
+      "Took ${timed.duration.inMilliseconds} milliseconds to create server of type '$network'"
+    )
     return timed.value
   }
 
   private fun server(network: String, address: String, vararg services: BindableService): Server {
     if (network != UNIX) {
-      throw UnsupportedNetworkException("Network type '${network}' is not supported.")
+      throw UnsupportedNetworkException("Network type '$network' is not supported.")
     }
 
-    val (builder, shutdownHook) =
-        when (val os = System.getProperty("os.name")) {
-          MAC_OS -> {
-            val boss = KQueueEventLoopGroup()
-            val worker = KQueueEventLoopGroup()
+    val (builder, shutdownHook) = when (val os = System.getProperty("os.name")) {
+      MAC_OS -> {
+        val boss = KQueueEventLoopGroup()
+        val worker = KQueueEventLoopGroup()
 
-            val builder =
-                NettyServerBuilder.forAddress(DomainSocketAddress(address))
-                    .bossEventLoopGroup(boss)
-                    .workerEventLoopGroup(worker)
-                    .channelType(KQueueServerDomainSocketChannel::class.java)
+        val builder =
+          NettyServerBuilder.forAddress(DomainSocketAddress(address))
+            .bossEventLoopGroup(boss)
+            .workerEventLoopGroup(worker)
+            .channelType(KQueueServerDomainSocketChannel::class.java)
 
-            builder to
-                {
-                  boss.shutdownGracefully()
-                  worker.shutdownGracefully()
-                }
-          }
-          LINUX -> {
-            val boss = EpollEventLoopGroup()
-            val worker = EpollEventLoopGroup()
-
-            val builder =
-                NettyServerBuilder.forAddress(DomainSocketAddress(address))
-                    .bossEventLoopGroup(boss)
-                    .workerEventLoopGroup(worker)
-                    .channelType(EpollServerDomainSocketChannel::class.java)
-
-            builder to
-                {
-                  boss.shutdownGracefully()
-                  worker.shutdownGracefully()
-                }
-          }
-          else -> throw UnsupportedPlatformException("OS '${os}' is not supported.")
+        builder to {
+          boss.shutdownGracefully()
+          worker.shutdownGracefully()
         }
+      }
+      LINUX -> {
+        val boss = EpollEventLoopGroup()
+        val worker = EpollEventLoopGroup()
+
+        val builder =
+          NettyServerBuilder.forAddress(DomainSocketAddress(address))
+            .bossEventLoopGroup(boss)
+            .workerEventLoopGroup(worker)
+            .channelType(EpollServerDomainSocketChannel::class.java)
+
+        builder to {
+          boss.shutdownGracefully()
+          worker.shutdownGracefully()
+        }
+      }
+      else -> throw UnsupportedPlatformException("OS '$os' is not supported.")
+    }
 
     if (mTLSConfig != null) {
-      GrpcSslContexts.configure(
-              SslContextBuilder.forServer(mTLSConfig.clientKey, mTLSConfig.clientCertificate))
-          .trustManager(fingerprintTrustManagerFactoryForCert(mTLSConfig.serverCertificate))
-          .trustManager(InsecureTrustManagerFactory.INSTANCE)
-          .build()
-          .also { builder.sslContext(it) }
+      GrpcSslContexts.configure(SslContextBuilder.forServer(mTLSConfig.clientKey, mTLSConfig.clientCertificate))
+        .trustManager(fingerprintTrustManagerFactoryForCert(mTLSConfig.serverCertificate))
+        .trustManager(InsecureTrustManagerFactory.INSTANCE)
+        .build()
+        .also { builder.sslContext(it) }
     }
 
     services.forEach { builder.addService(it) }
@@ -156,9 +153,9 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
 }
 
 internal data class MTLSConfig(
-    val serverCertificate: X509Certificate,
-    val clientCertificate: X509Certificate,
-    val clientKey: PrivateKey
+  val serverCertificate: X509Certificate,
+  val clientCertificate: X509Certificate,
+  val clientKey: PrivateKey
 )
 
 class UnsupportedNetworkException(message: String) : IllegalArgumentException(message)

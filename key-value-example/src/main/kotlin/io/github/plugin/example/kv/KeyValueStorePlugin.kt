@@ -6,8 +6,8 @@ import io.github.plugin.Plugin
 import io.github.plugin.example.keyvalue.KVGrpcKt
 import io.github.plugin.example.keyvalue.Kv
 import io.grpc.ManagedChannel
-import java.nio.charset.Charset
 import kotlinx.coroutines.runBlocking
+import java.nio.charset.Charset
 
 class KeyValueStorePlugin : Plugin<KeyValueStore> {
   override fun client(channel: ManagedChannel, broker: Broker): KeyValueStore {
@@ -20,11 +20,10 @@ class KeyValueStoreGrpc(channel: ManagedChannel) : KeyValueStore {
   private val stub = KVGrpcKt.KVCoroutineStub(channel)
 
   override fun put(key: String, value: String): Unit = runBlocking {
-    val request =
-        Kv.PutRequest.newBuilder()
-            .setKey(key)
-            .setValue(ByteString.copyFrom(value, Charset.defaultCharset()))
-            .build()
+    val request = Kv.PutRequest.newBuilder()
+      .setKey(key)
+      .setValue(ByteString.copyFrom(value, Charset.defaultCharset()))
+      .build()
     stub.put(request)
   }
 

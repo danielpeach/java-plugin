@@ -19,27 +19,25 @@ class CounterImpl(channel: ManagedChannel, private val broker: Broker) : Counter
     stub.get(request).value
   }
 
-  override fun put(key: String, value: Long, adder: (a: Long, b: Long) -> Long): Unit =
-      runBlocking {
+  override fun put(key: String, value: Long, adder: (a: Long, b: Long) -> Long): Unit = runBlocking {
     val service = AddHelperService(adder)
 
     val serviceId = broker.getNextId()
     val server = broker.acceptAndServe(serviceId, service)
 
     val request =
-        Bidirectional.PutRequest.newBuilder()
-            .setKey(key)
-            .setValue(value)
-            .setAddServer(serviceId)
-            .build()
+      Bidirectional.PutRequest.newBuilder()
+        .setKey(key)
+        .setValue(value)
+        .setAddServer(serviceId)
+        .build()
 
     stub.put(request)
     server.shutdown()
   }
 }
 
-class AddHelperService(private val adder: (a: Long, b: Long) -> Long) :
-    AddHelperGrpcKt.AddHelperCoroutineImplBase() {
+class AddHelperService(private val adder: (a: Long, b: Long) -> Long) : AddHelperGrpcKt.AddHelperCoroutineImplBase() {
   override suspend fun sum(request: Bidirectional.SumRequest): Bidirectional.SumResponse {
     val result = adder(request.a, request.b)
     return Bidirectional.SumResponse.newBuilder().setR(result).build()

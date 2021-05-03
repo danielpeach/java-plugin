@@ -1,7 +1,7 @@
 plugins {
   id "org.jetbrains.kotlin.jvm" version "$kotlinVersion" apply false
   id "com.google.protobuf" version "0.8.15" apply false
-  id "com.ncorti.ktfmt.gradle" version "0.5.0" apply false
+  id "com.diffplug.spotless" version "5.12.4" apply false
 }
 
 allprojects {
@@ -13,7 +13,7 @@ subprojects {
   apply plugin: "java"
   apply plugin: "kotlin"
   apply plugin: "com.google.protobuf"
-  apply plugin: "com.ncorti.ktfmt.gradle"
+  apply plugin: "com.diffplug.spotless"
 
   repositories {
     mavenCentral()
@@ -93,6 +93,16 @@ subprojects {
 
   tasks.withType(Test) {
     useJUnitPlatform()
+  }
+
+  spotless {
+    kotlin {
+      ktlint("0.40.0").userData([
+          disabled_rules          : "no-wildcard-imports",
+          indent_size             : "2",
+          continuation_indent_size: "2",
+      ])
+    }
   }
 }
 

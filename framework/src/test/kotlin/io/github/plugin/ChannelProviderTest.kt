@@ -32,12 +32,13 @@ class ChannelProviderTest : JUnit5Minutests {
       val (key, cert) = generateCert()
 
       val provider =
-          ChannelProvider(
-              MTLSConfig(
-                  serverCertificate = cert,
-                  clientCertificate = cert,
-                  clientKey = key,
-              ))
+        ChannelProvider(
+          MTLSConfig(
+            serverCertificate = cert,
+            clientCertificate = cert,
+            clientKey = key,
+          )
+        )
 
       val server = provider.server("unix", TestService())
       server.start()

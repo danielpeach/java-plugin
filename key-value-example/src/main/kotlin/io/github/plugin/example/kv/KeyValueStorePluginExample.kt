@@ -12,18 +12,19 @@ import io.github.plugin.Manager
 // ./gradlew :key-value-example:run
 fun main() {
   val manager = Manager()
-  val client =
-      manager.start(
-          ClientConfig(
-              encryptionMode = AutoMTLS,
-              handshakeConfig =
-                  HandshakeConfig(
-                      magicCookieKey = "BASIC_PLUGIN",
-                      magicCookieValue = "hello",
-                      protocolVersion = 1,
-                  ),
-              cmd = listOf("./key-value-example/build/kv"),
-              plugins = listOf(KeyValueStorePlugin())))
+  val client = manager.start(
+    ClientConfig(
+      encryptionMode = AutoMTLS,
+      handshakeConfig =
+      HandshakeConfig(
+        magicCookieKey = "BASIC_PLUGIN",
+        magicCookieValue = "hello",
+        protocolVersion = 1,
+      ),
+      cmd = listOf("./key-value-example/build/kv"),
+      plugins = listOf(KeyValueStorePlugin())
+    )
+  )
   val kvStore = client.dispense<KeyValueStore>()
 
   kvStore.put("what", "is up")

@@ -2,16 +2,16 @@ package io.github.plugin
 
 import io.grpc.Server
 import io.netty.channel.unix.DomainSocketAddress
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.SocketAddress
 import java.util.concurrent.TimeUnit
 import kotlin.time.measureTime
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 internal class PluginServer(
-    private val delegate: Server,
-    private val socketAddress: SocketAddress,
-    private val onShutdown: () -> Unit
+  private val delegate: Server,
+  private val socketAddress: SocketAddress,
+  private val onShutdown: () -> Unit
 ) : Server() {
   private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -22,7 +22,7 @@ internal class PluginServer(
   override fun isTerminated() = delegate.isTerminated
 
   override fun awaitTermination(timeout: Long, unit: TimeUnit?) =
-      delegate.awaitTermination(timeout, unit)
+    delegate.awaitTermination(timeout, unit)
 
   override fun start(): Server {
     measureTime { delegate.start() }.also { duration ->
