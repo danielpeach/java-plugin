@@ -1,0 +1,14 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+    jcenter()
+  }
+}
+
+include(
+    "key-value-example",
+    "framework",
+    "bidirectional-example"
+)
+rootProject.name = "plugins"
+

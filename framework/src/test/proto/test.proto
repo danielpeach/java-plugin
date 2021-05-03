@@ -1,0 +1,11 @@
+syntax = "proto3";
+package plugin;
+option java_package = "io.github.plugin.test";
+
+service TestService {
+  rpc Send(TestMessage) returns (TestMessage);
+}
+
+message TestMessage {
+  string message = 1;
+}

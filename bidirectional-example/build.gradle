@@ -1,0 +1,15 @@
+dependencies {
+  implementation project(":framework")
+}
+
+task buildGo(type: Exec) {
+  workingDir = "$projectDir/src/go-plugin/examples/bidirectional"
+  commandLine "/usr/local/bin/go", "build", "-o", "$buildDir/bidirectional", "./plugin-go-grpc/main.go"
+}
+
+task run(type: JavaExec) {
+  main = "io.github.plugin.example.bidirectional.CounterPluginExampleKt"
+  classpath = sourceSets.main.runtimeClasspath
+  dependsOn buildGo
+  workingDir = rootDir
+}

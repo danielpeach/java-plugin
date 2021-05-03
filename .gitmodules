@@ -1,0 +1,6 @@
+[submodule "bidirectional-example/src/go-plugin"]
+	path = bidirectional-example/src/go-plugin
+	url = git@github.com:hashicorp/go-plugin.git
+[submodule "key-value-example/src/go-plugin"]
+	path = key-value-example/src/go-plugin
+	url = git@github.com:hashicorp/go-plugin.git
