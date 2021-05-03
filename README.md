@@ -1,12 +1,12 @@
-# JVM Plugin
+# Java Plugin
 
-JVM plugin is a client-side implementation of
+`java-plugin` is a client-side implementation of
 [go-plugin](https://github.com/hashicorp/go-plugin). You can use it to run
 plugins written in Go (or any language, but Go is best supported) from a JVM application.
 
 ## Features
 
-JVM plugin implements many of `go-plugin`'s features:
+`java-plugin` implements many of `go-plugin`'s features:
 
 - Bidirectional communication
 - Complex arguments and return values
@@ -14,10 +14,10 @@ JVM plugin implements many of `go-plugin`'s features:
 - Logging and stdout/stderr syncing
 - Automatic mTLS
 
-JVM plugin supports plugins communicating via gRPC over Unix domain sockets. It
+`java-plugin` supports plugins communicating via gRPC over Unix domain sockets. It
 does not support Go's `net/rpc` protocol or communication over `localhost`.
 
-JVM plugin is tested on `macos-latest` and `ubuntu-latest`.
+`java-plugin` is tested on `macos-latest` and `ubuntu-latest`.
 
 ## Examples
 
