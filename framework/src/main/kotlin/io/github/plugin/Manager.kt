@@ -16,6 +16,9 @@ import java.util.*
 
 const val CORE_PROTOCOL_VERSION = 1
 
+/**
+ * [Manager] is the entrypoint for starting a plugin and retrieving a plugin [Client].
+ * */
 class Manager {
   // mutex protects access to clients.
   private val mutex = Mutex()
@@ -33,6 +36,10 @@ class Manager {
         })
   }
 
+  /**
+   * Starts a plugin with the provided [ClientConfig].
+   * @returns a client for the running plugin.
+   * */
   fun start(clientConfig: ClientConfig): Client = runBlocking {
     val (key, cert) = if (clientConfig.encryptionMode == AutoMTLS) {
       generateCert()
@@ -53,6 +60,9 @@ class Manager {
     return@runBlocking client
   }
 
+  /**
+   * Blocks until all of [Manager]'s clients have been killed.
+   * */
   fun killClients() = runBlocking {
     mutex.withLock {
       val removed = clients.map {
@@ -60,8 +70,7 @@ class Manager {
           it.kill()
           it
         }
-      }
-        .awaitAll()
+      }.awaitAll()
       clients.removeAll(removed)
     }
   }

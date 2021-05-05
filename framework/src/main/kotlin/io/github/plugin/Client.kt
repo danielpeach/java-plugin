@@ -7,8 +7,7 @@ import kotlinx.coroutines.sync.withLock
 import java.io.IOException
 import java.io.InputStream
 
-class Client
-internal constructor(
+class Client internal constructor(
   config: ClientConfig,
   handshake: Handshake,
   process: Process,
@@ -49,6 +48,7 @@ internal constructor(
   private val mutex = Mutex()
   private var alive = true
 
+  // TODO: kill should pull the client out of the manager.
   fun kill(): Unit = runBlocking {
     mutex.withLock {
       if (alive) {

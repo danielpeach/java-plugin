@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.cancellation.CancellationException
 
-class Broker
-internal constructor(
+class Broker internal constructor(
   private val scope: CoroutineScope,
   @PublishedApi internal val channelProvider: ChannelProvider,
   channel: ManagedChannel,
