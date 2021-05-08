@@ -15,8 +15,7 @@ fun main() {
   val client = manager.start(
     ClientConfig(
       encryptionMode = AutoMTLS,
-      handshakeConfig =
-      HandshakeConfig(
+      handshakeConfig = HandshakeConfig(
         magicCookieKey = "BASIC_PLUGIN",
         magicCookieValue = "hello",
         protocolVersion = 1,

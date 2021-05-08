@@ -9,11 +9,13 @@ import java.time.Duration
  *
  * @property [cmd] the command to be used to start the plugin subprocess.
  *
- * @property [handshakeConfig] a handshake that sets the requested plugin version and a key/value verification that must match the server's handshake config.
+ * @property [handshakeConfig] a handshake that sets the requested plugin version
+ * and a key/value verification that must match the server's handshake config.
  *
  * @property [plugins] the list of [Plugin]s that the client will have access to.
  *
- * @property [versionedPlugins] a set of integer-versioned [Plugin]s. This should be set instead of [plugins] if there is a range of plugin versions acceptable to the client.
+ * @property [versionedPlugins] a set of integer-versioned [Plugin]s. This should
+ * be set instead of [plugins] if there is a range of plugin versions acceptable to the client.
  *
  * @property [startTimeout] the maximum time allowed by the client for the plugin subprocess to start.
  *
@@ -58,9 +60,11 @@ data class ClientConfig(
  * [HandshakeConfig] is the configuration used by client and servers to
  * handshake before starting a plugin connection.
  *
- * @property [protocolVersion] the version that clients must match on to agree they can communicate. This field is not required if [ClientConfig.versionedPlugins] are being used.
+ * @property [protocolVersion] the version that clients must match on to agree they
+ * can communicate. This field is not required if [ClientConfig.versionedPlugins] are being used.
  *
- * @property [magicCookieKey] used with [magicCookieValue], this provides a very basic verification that a plugin is intended to be launched.
+ * @property [magicCookieKey] used with [magicCookieValue], this provides a very
+ * basic verification that a plugin is intended to be launched. It is not intended to be a security feature.
  *
  * @property [magicCookieValue] used with [magicCookieKey].
  * */

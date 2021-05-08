@@ -6,7 +6,14 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.IOException
 import java.io.InputStream
+import java.lang.IllegalArgumentException
 
+/**
+ * A [Client] should be instantiated with a [Manager].
+ *
+ * An instance of [Client] is responsible for the lifecycle of client- and server-side resources
+ * and for dispensing implementations of [Plugin]s.
+ * */
 class Client internal constructor(
   config: ClientConfig,
   handshake: Handshake,
@@ -39,16 +46,20 @@ class Client internal constructor(
     broker.start()
   }
 
+  /**
+   * @param [T] the type that should be instantiated and returned.
+   *
+   * @returns a type [T] that is implemented by the server-side subprocess.
+   * */
   inline fun <reified T> dispense(): T {
-    val plugin = plugins.filterIsInstance<Plugin<T>>().first()
+    val plugin = plugins.filterIsInstance<Plugin<T>>().firstOrNull()
+      ?: throw IllegalArgumentException("Could not find plugin of type \"${T::class.java.name}\"")
     return plugin.client(channel, broker)
   }
 
-  // mutex protects access to alive.
-  private val mutex = Mutex()
-  private var alive = true
-
-  // TODO: kill should pull the client out of the manager.
+  /**
+   * Kills the plugin subprocess and cleans up client resources.
+   * */
   fun kill(): Unit = runBlocking {
     mutex.withLock {
       if (alive) {
@@ -59,6 +70,10 @@ class Client internal constructor(
       }
     }
   }
+
+  // mutex protects access to alive.
+  private val mutex = Mutex()
+  private var alive = true
 
   // Debug logs from the server side plugin framework itself will end up here.
   private fun listenToStderr(stderr: InputStream) {

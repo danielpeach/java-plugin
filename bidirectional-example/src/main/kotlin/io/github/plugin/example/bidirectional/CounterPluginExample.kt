@@ -13,8 +13,7 @@ fun main() {
   val manager = Manager()
   val client = manager.start(
     ClientConfig(
-      handshakeConfig =
-      HandshakeConfig(
+      handshakeConfig = HandshakeConfig(
         magicCookieKey = "BASIC_PLUGIN",
         magicCookieValue = "hello",
         protocolVersion = 1
