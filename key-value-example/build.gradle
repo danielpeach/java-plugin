@@ -1,5 +1,5 @@
 dependencies {
-  implementation project(":framework")
+  implementation project(":java-plugin")
 }
 
 task buildGo(type: Exec) {

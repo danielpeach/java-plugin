@@ -5,32 +5,34 @@ import java.lang.IllegalArgumentException
 import java.time.Duration
 
 /**
- * [ClientConfig] configures plugins. It should be passed to [Manager.start].
+ * An instance of [ClientConfig] tells a [Manager] how to configure a plugin.
  *
- * @property [cmd] the command to be used to start the plugin subprocess.
+ * @see [Manager]
  *
- * @property [handshakeConfig] a handshake that sets the requested plugin version
+ * @property [cmd] The command to be used to start the plugin subprocess.
+ *
+ * @property [handshakeConfig] A handshake that sets the requested plugin version
  * and a key/value verification that must match the server's handshake config.
  *
- * @property [plugins] the list of [Plugin]s that the client will have access to.
+ * @property [plugins] The list of [Plugin]s that the client will have access to.
  *
- * @property [versionedPlugins] a set of integer-versioned [Plugin]s. This should
+ * @property [versionedPlugins] A set of integer-versioned [Plugin]s. This should
  * be set instead of [plugins] if there is a range of plugin versions acceptable to the client.
  *
- * @property [startTimeout] the maximum time allowed by the client for the plugin subprocess to start.
+ * @property [startTimeout] The maximum time allowed by the client for the plugin subprocess to start.
  *
- * @property [stdioMode] defines how server-side plugin logs should be handled by the client.
+ * @property [stdioMode] Defines how server-side plugin logs should be handled by the client.
  *
- * @property [encryptionMode] defines the encryption mode for communication between the client and plugin.
+ * @property [encryptionMode] Defines the encryption mode for communication between the client and plugin.
  * */
 data class ClientConfig(
-  val cmd: List<String>,
-  val handshakeConfig: HandshakeConfig,
+  internal val cmd: List<String>,
+  internal val handshakeConfig: HandshakeConfig,
   private val plugins: List<Plugin<*>> = emptyList(),
   private val versionedPlugins: Map<Int, List<Plugin<*>>> = emptyMap(),
-  val startTimeout: Duration = Duration.ofMinutes(1),
-  val stdioMode: StdioMode = Log,
-  val encryptionMode: EncryptionMode = Plaintext
+  internal val startTimeout: Duration = Duration.ofMinutes(1),
+  internal val stdioMode: StdioMode = Log,
+  internal val encryptionMode: EncryptionMode = Plaintext
 ) {
   init {
     if (handshakeConfig.protocolVersion != null &&
@@ -48,7 +50,7 @@ data class ClientConfig(
     }
   }
 
-  fun getVersionedPlugins(): Map<Int, List<Plugin<*>>> {
+  internal fun getVersionedPlugins(): Map<Int, List<Plugin<*>>> {
     if (handshakeConfig.protocolVersion != null && plugins.isNotEmpty()) {
       return versionedPlugins + mapOf(handshakeConfig.protocolVersion to plugins)
     }
@@ -57,16 +59,15 @@ data class ClientConfig(
 }
 
 /**
- * [HandshakeConfig] is the configuration used by client and servers to
- * handshake before starting a plugin connection.
+ * [HandshakeConfig] configures the pre-startup handshake between client and server.
  *
- * @property [protocolVersion] the version that clients must match on to agree they
+ * @property [protocolVersion] The version that clients must match on to agree they
  * can communicate. This field is not required if [ClientConfig.versionedPlugins] are being used.
  *
- * @property [magicCookieKey] used with [magicCookieValue], this provides a very
+ * @property [magicCookieKey] Used with [magicCookieValue], this provides a very
  * basic verification that a plugin is intended to be launched. It is not intended to be a security feature.
  *
- * @property [magicCookieValue] used with [magicCookieKey].
+ * @property [magicCookieValue] Used with [magicCookieKey].
  * */
 data class HandshakeConfig(
   val protocolVersion: Int? = null,
@@ -80,11 +81,11 @@ data class HandshakeConfig(
 sealed class StdioMode
 
 /**
- * The [PipeToWriter] mode forwards server-side plugin logs to [Writer]s.
+ * The [PipeToWriter] stdio mode forwards server-side plugin logs to instances of [Writer].
  *
- * @property [syncStdout] a writer for the plugin's stdout channel.
+ * @property [syncStdout] A writer for the plugin's stdout channel.
  *
- * @property [syncStderr] a writer for the plugin's stderr channel.
+ * @property [syncStderr] A writer for the plugin's stderr channel.
  * */
 class PipeToWriter(
   val syncStdout: Writer,
@@ -92,12 +93,12 @@ class PipeToWriter(
 ) : StdioMode()
 
 /**
- * The [Log] mode logs server-side plugin logs alongside the client's logs.
+ * The [Log] stdio mode logs server-side plugin logs alongside the client's logs.
  * */
 object Log : StdioMode()
 
 /**
- * The [Drop] mode ignores server-side plugin logs.
+ * The [Drop] stdio mode ignores server-side plugin logs.
  * */
 object Drop : StdioMode()
 
@@ -107,11 +108,11 @@ object Drop : StdioMode()
 sealed class EncryptionMode
 
 /**
- * The [Plaintext] encryption mode does not encrypt client/server communication.
+ * When using the [Plaintext] encryption mode, communication between client and server will not be encrypted.
  * */
 object Plaintext : EncryptionMode()
 
 /**
- * The [AutoMTLS] encryption mode has the client and server automatically negotiate mTLS.
+ * When using the [AutoMTLS] encryption mode, the client and server will automatically negotiate mTLS.
  * */
 object AutoMTLS : EncryptionMode()

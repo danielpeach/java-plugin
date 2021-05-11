@@ -7,7 +7,7 @@ pluginManagement {
 
 include(
     "key-value-example",
-    "framework",
+    "java-plugin",
     "bidirectional-example"
 )
 rootProject.name = "plugins"

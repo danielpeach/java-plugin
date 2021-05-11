@@ -9,10 +9,10 @@ import java.io.InputStream
 import java.lang.IllegalArgumentException
 
 /**
- * A [Client] should be instantiated with a [Manager].
+ * An instance of [Client] is responsible for the lifecycle of client and server-side resources and
+ * for dispensing interfaces implemented by the plugin framework.
  *
- * An instance of [Client] is responsible for the lifecycle of client- and server-side resources
- * and for dispensing implementations of [Plugin]s.
+ * A [Client] should be instantiated with a [Manager].
  * */
 class Client internal constructor(
   config: ClientConfig,
@@ -47,9 +47,11 @@ class Client internal constructor(
   }
 
   /**
-   * @param [T] the type that should be instantiated and returned.
+   * Returns a type [T] that is implemented by the server-side subprocess.
    *
-   * @returns a type [T] that is implemented by the server-side subprocess.
+   * @param [T] The type that should be instantiated and returned.
+   *
+   * @returns A type [T] that is implemented by the server-side subprocess.
    * */
   inline fun <reified T> dispense(): T {
     val plugin = plugins.filterIsInstance<Plugin<T>>().firstOrNull()

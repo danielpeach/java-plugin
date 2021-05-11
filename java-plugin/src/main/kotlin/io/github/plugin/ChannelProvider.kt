@@ -34,7 +34,7 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
 
   fun clientChannel(network: String, address: String): ManagedChannel {
     if (network != UNIX) {
-      throw UnsupportedNetworkException("Network type '$network' is not supported.")
+      throw IllegalArgumentException("Network type '$network' is not supported.")
     }
 
     val (builder, shutdownHook) = when (val os = System.getProperty("os.name")) {
@@ -56,7 +56,7 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
 
         builder to { elg.shutdownGracefully() }
       }
-      else -> throw UnsupportedPlatformException("OS '$os' is not supported.")
+      else -> throw IllegalArgumentException("OS '$os' is not supported.")
     }
 
     if (mTLSConfig != null) {
@@ -101,7 +101,7 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
 
   private fun server(network: String, address: String, vararg services: BindableService): Server {
     if (network != UNIX) {
-      throw UnsupportedNetworkException("Network type '$network' is not supported.")
+      throw IllegalArgumentException("Network type '$network' is not supported.")
     }
 
     val (builder, shutdownHook) = when (val os = System.getProperty("os.name")) {
@@ -135,7 +135,7 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
           worker.shutdownGracefully()
         }
       }
-      else -> throw UnsupportedPlatformException("OS '$os' is not supported.")
+      else -> throw IllegalArgumentException("OS '$os' is not supported.")
     }
 
     if (mTLSConfig != null) {
@@ -157,7 +157,3 @@ internal data class MTLSConfig(
   val clientCertificate: X509Certificate,
   val clientKey: PrivateKey
 )
-
-class UnsupportedNetworkException(message: String) : IllegalArgumentException(message)
-
-class UnsupportedPlatformException(message: String) : IllegalArgumentException(message)

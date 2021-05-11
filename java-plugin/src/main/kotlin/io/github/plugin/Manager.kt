@@ -14,7 +14,7 @@ import java.security.cert.X509Certificate
 import java.time.Duration
 import java.util.*
 
-const val CORE_PROTOCOL_VERSION = 1
+internal const val CORE_PROTOCOL_VERSION = 1
 
 /**
  * [Manager] is the entrypoint for starting a plugin and retrieving a plugin [Client].

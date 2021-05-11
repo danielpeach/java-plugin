@@ -1,4 +1,6 @@
 dependencies {
+  apply plugin: "org.jetbrains.dokka"
+
   implementation "org.slf4j:slf4j-simple:1.7.29"
   implementation "io.netty:netty-transport-native-kqueue:4.1.52.Final"
   implementation "io.netty:netty-all:4.1.52.Final"
