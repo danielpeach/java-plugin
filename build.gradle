@@ -3,11 +3,11 @@ plugins {
   id "com.google.protobuf" version "0.8.15" apply false
   id "com.diffplug.spotless" version "5.12.4" apply false
   id "org.jetbrains.dokka" version "1.4.32" apply false
+  id "nebula.maven-publish" version "17.3.2" apply false
 }
 
 allprojects {
   group = "io.github.java-plugin"
-  version = "0.0.1-SNAPSHOT"
 }
 
 subprojects {
@@ -18,7 +18,6 @@ subprojects {
 
   repositories {
     mavenCentral()
-    jcenter()
   }
 
   sourceCompatibility = JavaVersion.VERSION_1_8

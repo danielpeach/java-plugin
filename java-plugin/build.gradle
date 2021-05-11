@@ -1,5 +1,6 @@
 dependencies {
   apply plugin: "org.jetbrains.dokka"
+  apply plugin: "nebula.maven-publish"
 
   implementation "org.slf4j:slf4j-simple:1.7.29"
   implementation "io.netty:netty-transport-native-kqueue:4.1.52.Final"
