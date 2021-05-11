@@ -21,8 +21,8 @@ subprojects {
     jcenter()
   }
 
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
 
   configurations.all {
     resolutionStrategy.eachDependency { details ->
@@ -88,7 +88,8 @@ subprojects {
           "-Xopt-in=kotlin.RequiresOptIn",
           "-Xopt-in=kotlin.time.ExperimentalTime"
       ]
-      jvmTarget = "11"
+      languageVersion = "1.4"
+      jvmTarget = JavaVersion.VERSION_1_8
     }
   }
 
