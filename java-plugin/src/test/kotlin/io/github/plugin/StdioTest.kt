@@ -25,45 +25,41 @@ import java.io.OutputStream
 import java.io.Writer
 
 class StdioTest : JUnit5Minutests {
-  fun tests() =
-    rootContext<Fixture> {
-      fixture { Fixture() }
+  fun tests() = rootContext<Fixture> {
+    fixture { Fixture() }
 
-      after { stdioServer.shutdown() }
+    after { stdioServer.shutdown() }
 
-      test("plugin logs are streamed back to the client") {
-        val waitForLog = CompletableDeferred<Unit>()
-        val slot = slot<String>()
+    test("plugin logs are streamed back to the client") {
+      val waitForLog = CompletableDeferred<Unit>()
+      val slot = slot<String>()
 
-        val writer =
-          mockk<Writer> { every { write(capture(slot)) } answers { waitForLog.complete(Unit) } }
+      val writer =
+        mockk<Writer> { every { write(capture(slot)) } answers { waitForLog.complete(Unit) } }
 
-        Stdio(
-          scope,
-          ClientConfig(
-            cmd = emptyList(),
-            handshakeConfig =
-            HandshakeConfig(
-              protocolVersion = 1, magicCookieKey = "", magicCookieValue = ""
-            ),
-            stdioMode =
-            PipeToWriter(
-              syncStdout = writer,
-              syncStderr = OutputStream.nullOutputStream().bufferedWriter()
-            ),
-            plugins = emptyList()
+      Stdio(
+        scope,
+        ClientConfig(
+          cmd = emptyList(),
+          handshakeConfig = HandshakeConfig(
+            protocolVersion = 1, magicCookieKey = "", magicCookieValue = ""
           ),
-          channel
-        )
-          .start()
+          stdioMode = PipeToWriter(
+            syncStdout = writer,
+            syncStderr = mockk()
+          ),
+          plugins = emptyList()
+        ),
+        channel
+      ).start()
 
-        pluginLogger.sendBlocking("hello from the other side")
+      pluginLogger.sendBlocking("hello from the other side")
 
-        waitForLog.awaitBlocking()
+      waitForLog.awaitBlocking()
 
-        expectThat(slot.captured).isEqualTo("hello from the other side")
-      }
+      expectThat(slot.captured).isEqualTo("hello from the other side")
     }
+  }
 
   private class Fixture {
     val scope = CoroutineScope(Dispatchers.IO)
