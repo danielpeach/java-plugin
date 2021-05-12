@@ -9,8 +9,8 @@ dependencies {
   implementation "org.bouncycastle:bcpkix-jdk15on:1.68"
 
   testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.2"
-  testImplementation "io.strikt:strikt-core:0.22.1"
-  testImplementation "dev.minutest:minutest:1.10.0"
+  testImplementation "io.strikt:strikt-core:0.31.0"
+  testImplementation "dev.minutest:minutest:1.13.0"
   testImplementation "io.mockk:mockk:1.9.3"
 
   testRuntime "org.junit.jupiter:junit-jupiter-engine:5.4.0"
