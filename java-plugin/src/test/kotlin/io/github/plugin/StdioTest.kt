@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
-import java.io.OutputStream
 import java.io.Writer
 
 class StdioTest : JUnit5Minutests {

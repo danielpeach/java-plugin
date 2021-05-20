@@ -3,7 +3,7 @@ package io.github.plugin
 import dev.minutest.junit.JUnit5Minutests
 import dev.minutest.rootContext
 import strikt.api.expectCatching
-import strikt.assertions.succeeded
+import strikt.assertions.isSuccess
 
 class CertificatesTest : JUnit5Minutests {
   fun tests() = rootContext {
@@ -12,7 +12,7 @@ class CertificatesTest : JUnit5Minutests {
 
       val pemEncodedCert = writeCertAsPEM(cert)
 
-      expectCatching { parseCertificate(pemEncodedCert).checkValidity() }.succeeded()
+      expectCatching { parseCertificate(pemEncodedCert).checkValidity() }.isSuccess()
     }
   }
 }

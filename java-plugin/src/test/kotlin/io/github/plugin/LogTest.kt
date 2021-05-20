@@ -8,6 +8,7 @@ import strikt.api.expectThat
 import strikt.assertions.endsWith
 
 class LogTest : JUnit5Minutests {
+
   fun tests() = rootContext {
     test("unstructured log line") {
       val slot = slot<String>()
