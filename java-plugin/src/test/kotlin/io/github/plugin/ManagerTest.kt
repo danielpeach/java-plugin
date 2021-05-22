@@ -8,6 +8,7 @@ import strikt.api.expectThrows
 import strikt.assertions.isEqualTo
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 
 class ManagerTest : JUnit5Minutests {
   fun tests() = rootContext<Manager> {
@@ -49,21 +50,15 @@ class ManagerTest : JUnit5Minutests {
     }
 
     test("initiates a simple plugin handshake") {
-      val path = Files.createTempFile("manager-test", ".sh")
-
-      val file = File(path.toUri())
-
-      file.writeText(
+      val path = write {
         """
         #!/bin/sh
         echo "1|1|unix|/path/to/socket|grpc" # ignore
         
         >&2 echo MAGIC_COOKIE_KEY=${"$"}MAGIC_COOKIE_KEY
         >&2 echo PLUGIN_PROTOCOL_VERSIONS=${"$"}PLUGIN_PROTOCOL_VERSIONS
-        """.trimIndent()
-      )
-      file.setExecutable(true)
-      file.deleteOnExit()
+        """
+      }
 
       val (process, _) = startAndReadHandshake(
         ClientConfig(
@@ -84,20 +79,14 @@ class ManagerTest : JUnit5Minutests {
     }
 
     test("initiates a complex plugin handshake") {
-      val path = Files.createTempFile("manager-test", ".sh")
-
-      val file = File(path.toUri())
-
-      file.writeText(
+      val path = write {
         """
         #!/bin/sh
         echo "1|1|unix|/path/to/socket|grpc" # ignore
         
         >&2 echo PLUGIN_PROTOCOL_VERSIONS=${"$"}PLUGIN_PROTOCOL_VERSIONS
-        """.trimIndent()
-      )
-      file.setExecutable(true)
-      file.deleteOnExit()
+        """
+      }
 
       val (process, _) = startAndReadHandshake(
         ClientConfig(
@@ -121,18 +110,12 @@ class ManagerTest : JUnit5Minutests {
     }
 
     test("can read a handshake from the started plugin") {
-      val path = Files.createTempFile("manager-test", ".sh")
-
-      val file = File(path.toUri())
-
-      file.writeText(
+      val path = write {
         """
         #!/bin/sh
         echo "1|1|unix|/path/to/socket|grpc"
-        """.trimIndent()
-      )
-      file.setExecutable(true)
-      file.deleteOnExit()
+        """
+      }
 
       val (_, handshake) = startAndReadHandshake(
         ClientConfig(
@@ -155,4 +138,17 @@ class ManagerTest : JUnit5Minutests {
       }
     }
   }
+}
+
+fun write(block: () -> String): Path {
+  val script = block().trimIndent()
+  val path = Files.createTempFile("java-plugin-test", ".sh")
+
+  val file = File(path.toUri())
+
+  file.writeText(script)
+  file.setExecutable(true)
+  file.deleteOnExit()
+
+  return path
 }
