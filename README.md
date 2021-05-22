@@ -1,3 +1,5 @@
+![CI](https://github.com/danielpeach/java-plugin/workflows/Build/badge.svg)
+
 # Java Plugin
 
 `java-plugin` is a client-side implementation of
