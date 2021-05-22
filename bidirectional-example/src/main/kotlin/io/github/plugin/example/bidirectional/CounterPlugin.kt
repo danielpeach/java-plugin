@@ -2,6 +2,9 @@ package io.github.plugin.example.bidirectional
 
 import io.github.plugin.Broker
 import io.github.plugin.Plugin
+import io.github.plugin.example.bidirectional.grpc.AddHelperGrpcKt
+import io.github.plugin.example.bidirectional.grpc.Bidirectional
+import io.github.plugin.example.bidirectional.grpc.CounterGrpcKt
 import io.grpc.ManagedChannel
 import kotlinx.coroutines.runBlocking
 

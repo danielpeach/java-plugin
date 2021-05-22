@@ -3,8 +3,8 @@ package io.github.plugin.example.kv
 import com.google.protobuf.ByteString
 import io.github.plugin.Broker
 import io.github.plugin.Plugin
-import io.github.plugin.example.keyvalue.KVGrpcKt
-import io.github.plugin.example.keyvalue.Kv
+import io.github.plugin.example.keyvalue.grpc.KVGrpcKt
+import io.github.plugin.example.keyvalue.grpc.Kv
 import io.grpc.ManagedChannel
 import kotlinx.coroutines.runBlocking
 import java.nio.charset.Charset

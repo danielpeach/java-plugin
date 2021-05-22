@@ -1,6 +1,7 @@
 package io.github.plugin
 
-import io.github.plugin.GrpcBroker.ConnInfo
+import io.github.plugin.grpc.GRPCBrokerGrpcKt
+import io.github.plugin.grpc.GrpcBroker.ConnInfo
 import io.grpc.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel

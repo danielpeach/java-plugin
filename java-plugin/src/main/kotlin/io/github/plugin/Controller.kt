@@ -1,5 +1,7 @@
 package io.github.plugin
 
+import io.github.plugin.grpc.GRPCControllerGrpcKt
+import io.github.plugin.grpc.GrpcController
 import io.grpc.ManagedChannel
 import io.grpc.StatusException
 

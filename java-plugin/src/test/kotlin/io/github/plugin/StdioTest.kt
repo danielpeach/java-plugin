@@ -5,7 +5,8 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Empty
 import dev.minutest.junit.JUnit5Minutests
 import dev.minutest.rootContext
-import io.github.plugin.GrpcStdio.StdioData
+import io.github.plugin.grpc.GRPCStdioGrpcKt
+import io.github.plugin.grpc.GrpcStdio.StdioData
 import io.grpc.ManagedChannel
 import io.grpc.Server
 import io.grpc.inprocess.InProcessChannelBuilder

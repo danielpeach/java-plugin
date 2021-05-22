@@ -1,6 +1,7 @@
 package io.github.plugin
 
 import com.google.protobuf.Empty
+import io.github.plugin.grpc.GRPCStdioGrpcKt
 import io.grpc.ManagedChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -8,7 +9,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
-import io.github.plugin.GrpcStdio.StdioData.Channel as StdioChannel
+import io.github.plugin.grpc.GrpcStdio.StdioData.Channel as StdioChannel
 
 internal class Stdio(
   private val scope: CoroutineScope,

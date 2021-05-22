@@ -1,7 +1,7 @@
 package io.github.plugin.internal
 
-import io.github.plugin.test.Test
-import io.github.plugin.test.TestServiceGrpcKt
+import io.github.plugin.test.grpc.Test
+import io.github.plugin.test.grpc.TestServiceGrpcKt
 import io.grpc.ManagedChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking

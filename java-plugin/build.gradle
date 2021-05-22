@@ -1,6 +1,7 @@
 dependencies {
   apply plugin: "org.jetbrains.dokka"
   apply plugin: "nebula.maven-publish"
+  apply plugin: "jacoco"
 
   implementation "org.slf4j:slf4j-simple:1.7.29"
   implementation "io.netty:netty-transport-native-kqueue:4.1.52.Final"
@@ -16,4 +17,27 @@ dependencies {
   testRuntime "org.junit.jupiter:junit-jupiter-engine:5.4.0"
   testRuntime "org.junit.platform:junit-platform-launcher:1.4.0"
   testRuntime "org.junit.platform:junit-platform-commons:1.5.2"
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    csv.enabled = true
+  }
+
+  afterEvaluate {
+    getClassDirectories().setFrom(files(classDirectories.files.collect {
+      fileTree(dir: it, exclude: [
+        '**/plugin/grpc/**'
+      ])
+    }))
+  }
+}
+
+test {
+  jacoco {
+    excludes = [
+      "**/plugin/grpc/**"
+    ]
+  }
 }

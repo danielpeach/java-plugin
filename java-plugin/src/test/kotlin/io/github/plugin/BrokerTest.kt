@@ -2,7 +2,8 @@ package io.github.plugin
 
 import dev.minutest.junit.JUnit5Minutests
 import dev.minutest.rootContext
-import io.github.plugin.GrpcBroker.ConnInfo
+import io.github.plugin.grpc.GRPCBrokerGrpcKt
+import io.github.plugin.grpc.GrpcBroker.ConnInfo
 import io.github.plugin.internal.TestClient
 import io.github.plugin.internal.TestService
 import kotlinx.coroutines.*
