@@ -68,8 +68,7 @@ class BrokerTest : JUnit5Minutests {
       // Server
       val serviceId = 1
       val server = channelProvider.server("unix", TestService()).start()
-      val connection =
-        ConnInfo.newBuilder()
+      val connection = ConnInfo.newBuilder()
           .setServiceId(serviceId)
           .setNetwork("unix")
           .setAddress(server.listenSocket.path())
@@ -121,14 +120,18 @@ class BrokerTest : JUnit5Minutests {
     val receiver = Channel<ConnInfo>()
 
     val channelProvider = ChannelProvider()
-    val brokerServer =
-      channelProvider.server("unix", BrokerServer(scope, sender, receiver)).also { it.start() }
+
+    val brokerServer = channelProvider.server(
+      "unix",
+      BrokerService(scope, sender, receiver)
+    ).also { it.start() }
+
     val brokerChannel = channelProvider.clientChannel("unix", brokerServer.listenSocket.path())
 
     val brokerClient = Broker(scope, channelProvider, brokerChannel, 10000L)
   }
 
-  private class BrokerServer(
+  private class BrokerService(
     private val scope: CoroutineScope,
     private val sender: Channel<ConnInfo>,
     private val receiver: Channel<ConnInfo>

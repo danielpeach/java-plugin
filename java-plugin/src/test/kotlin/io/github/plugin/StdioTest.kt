@@ -34,8 +34,9 @@ class StdioTest : JUnit5Minutests {
       val waitForLog = CompletableDeferred<Unit>()
       val slot = slot<String>()
 
-      val writer =
-        mockk<Writer> { every { write(capture(slot)) } answers { waitForLog.complete(Unit) } }
+      val writer = mockk<Writer> {
+        every { write(capture(slot)) } answers { waitForLog.complete(Unit) }
+      }
 
       Stdio(
         scope,
@@ -65,16 +66,15 @@ class StdioTest : JUnit5Minutests {
     val scope = CoroutineScope(Dispatchers.IO)
     val pluginLogger = Channel<String>()
 
-    val stdioServer: Server =
-      InProcessServerBuilder.forName("stdio_test")
-        .addService(StdioServer(pluginLogger))
+    val stdioServer: Server = InProcessServerBuilder.forName("stdio_test")
+        .addService(StdioService(pluginLogger))
         .build()
         .start()
 
     val channel: ManagedChannel = InProcessChannelBuilder.forName("stdio_test").build()
   }
 
-  private class StdioServer(
+  private class StdioService(
     private val pluginLogger: Channel<String>,
   ) : GRPCStdioGrpcKt.GRPCStdioCoroutineImplBase() {
     override fun streamStdio(request: Empty): Flow<StdioData> {
