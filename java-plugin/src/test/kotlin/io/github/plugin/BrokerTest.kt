@@ -46,9 +46,7 @@ class BrokerTest : JUnit5Minutests {
       }
     }
 
-    test(
-      "acceptAndServe throws a BrokerServiceException when the broker server is not running"
-    ) {
+    test("acceptAndServe throws a BrokerServiceException when the broker server is not running") {
       // Client
       brokerClient.start()
 

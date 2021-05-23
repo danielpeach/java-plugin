@@ -9,8 +9,6 @@ import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.time.withTimeout
-import receiveBlockingWithTimeout
 import strikt.api.expectCatching
 import strikt.assertions.isSuccess
 
