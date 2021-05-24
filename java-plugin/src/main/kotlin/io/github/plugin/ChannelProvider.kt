@@ -14,7 +14,6 @@ import io.netty.channel.kqueue.KQueueEventLoopGroup
 import io.netty.channel.kqueue.KQueueServerDomainSocketChannel
 import io.netty.channel.unix.DomainSocketAddress
 import io.netty.handler.ssl.SslContextBuilder
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
@@ -62,8 +61,8 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
     if (mTLSConfig != null) {
       builder.sslContext(
         GrpcSslContexts.forClient()
-          .trustManager(fingerprintTrustManagerFactoryForCert(mTLSConfig.serverCertificate))
-          .keyManager(mTLSConfig.clientKey, mTLSConfig.clientCertificate)
+          .trustManager(fingerprintTrustManagerFactoryForCerts(mTLSConfig.trustedCertificates))
+          .keyManager(mTLSConfig.key, mTLSConfig.certificate)
           .build()
       )
     } else {
@@ -139,11 +138,9 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
     }
 
     if (mTLSConfig != null) {
-      GrpcSslContexts.configure(SslContextBuilder.forServer(mTLSConfig.clientKey, mTLSConfig.clientCertificate))
-        .trustManager(fingerprintTrustManagerFactoryForCert(mTLSConfig.serverCertificate))
-        .trustManager(InsecureTrustManagerFactory.INSTANCE)
-        .build()
-        .also { builder.sslContext(it) }
+      builder.sslContext(
+        GrpcSslContexts.configure(SslContextBuilder.forServer(mTLSConfig.key, mTLSConfig.certificate)).build()
+      )
     }
 
     services.forEach { builder.addService(it) }
@@ -153,7 +150,7 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
 }
 
 internal data class MTLSConfig(
-  val serverCertificate: X509Certificate,
-  val clientCertificate: X509Certificate,
-  val clientKey: PrivateKey
+  val trustedCertificates: List<X509Certificate>,
+  val certificate: X509Certificate,
+  val key: PrivateKey
 )

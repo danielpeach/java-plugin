@@ -127,9 +127,9 @@ class Manager {
     }
 
     return MTLSConfig(
-      serverCertificate = handshake.serverCertificate,
-      clientCertificate = clientCert,
-      clientKey = clientKey
+      trustedCertificates = listOf(handshake.serverCertificate),
+      certificate = clientCert,
+      key = clientKey
     )
   }
 

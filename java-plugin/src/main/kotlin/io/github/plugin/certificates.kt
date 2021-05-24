@@ -52,9 +52,11 @@ internal fun fingerprintCertificate(certificate: ByteArray, algorithm: String): 
   return BaseEncoding.base16().encode(md.digest(certificate))
 }
 
-internal fun fingerprintTrustManagerFactoryForCert(cert: X509Certificate): TrustManagerFactory {
-  val fingerprint = fingerprintCertificate(cert.encoded, SHA_256)
-  return FingerprintTrustManagerFactory.builder(SHA_256).fingerprints(listOf(fingerprint)).build()
+internal fun fingerprintTrustManagerFactoryForCerts(certs: List<X509Certificate>): TrustManagerFactory {
+  val fingerprints = certs.map { cert ->
+    fingerprintCertificate(cert.encoded, SHA_256)
+  }
+  return FingerprintTrustManagerFactory.builder(SHA_256).fingerprints(fingerprints).build()
 }
 
 internal fun generateCert(): Pair<PrivateKey, X509Certificate> {
