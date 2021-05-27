@@ -8,7 +8,7 @@ task buildGo(type: Exec) {
 }
 
 task run(type: JavaExec) {
-  main = "io.github.plugin.example.bidirectional.CounterPluginExampleKt"
+  main = "io.github.danielpeach.plugin.example.bidirectional.CounterPluginExampleKt"
   classpath = sourceSets.main.runtimeClasspath
   dependsOn buildGo
   workingDir = rootDir

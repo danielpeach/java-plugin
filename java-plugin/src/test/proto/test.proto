@@ -1,6 +1,6 @@
 syntax = "proto3";
 package plugin;
-option java_package = "io.github.plugin.test.grpc";
+option java_package = "io.github.danielpeach.plugin.test.grpc";
 
 service TestService {
   rpc Send(TestMessage) returns (TestMessage);

@@ -7,7 +7,7 @@ plugins {
 }
 
 allprojects {
-  group = "io.github.java-plugin"
+  group = "io.github.danielpeach.java-plugin"
 }
 
 subprojects {
