@@ -1,7 +1,5 @@
 package io.github.danielpeach.plugin
 
-import io.grpc.StatusException
-import java.lang.Exception
 import kotlin.coroutines.cancellation.CancellationException
 
 /**

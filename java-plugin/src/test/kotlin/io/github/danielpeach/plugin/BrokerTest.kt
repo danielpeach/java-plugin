@@ -51,7 +51,7 @@ class BrokerTest : JUnit5Minutests {
       brokerClient.start()
 
       // Server
-      brokerServer.shutdown()
+      brokerServer.shutdownAndAwait()
 
       val serviceId = brokerClient.getNextId()
       expectThrows<BrokerServiceException> {
