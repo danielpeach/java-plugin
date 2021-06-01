@@ -126,7 +126,7 @@ class BrokerTest : JUnit5Minutests {
 
     val brokerChannel = channelProvider.clientChannel("unix", brokerServer.listenSocket.path())
 
-    val brokerClient = Broker(scope, channelProvider, brokerChannel, 10000L)
+    val brokerClient = Broker(scope, channelProvider, brokerChannel, 1000L)
   }
 
   private class BrokerService(

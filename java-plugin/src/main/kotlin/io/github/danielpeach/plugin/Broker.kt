@@ -57,15 +57,15 @@ class Broker internal constructor(
    *
    * 1. The client acquires a service ID via [getNextId].
    *
-   * 1. The client serves one or more gRPC services via [acceptAndServe].
+   * 2. The client serves one or more gRPC services via [acceptAndServe].
    *
-   * 1. The client sends a message that includes its service ID ("please dial me back at this number").
+   * 3. The client sends a message that includes its service ID ("please dial me back at this number").
    *
-   * 1. The server-side plugin implementation receives the message containing the service ID.
+   * 4. The server-side plugin implementation receives the message containing the service ID.
    *   The [Go plugin framework](https://github.com/hashicorp/go-plugin) has a method identical to [dial] below that accepts a service ID and
    *   facilitates communication back to the client. The server-side plugin should handle this callback synchronously.
    *
-   * 1. The client cleans up its server.
+   * 5. The client cleans up its server.
    *
    * @param [serviceId] The acquired service ID.
    *
@@ -112,10 +112,7 @@ class Broker internal constructor(
       stub
         .startStream(sender.consumeAsFlow())
         .catch { e ->
-          when (e) {
-            is StatusException -> sender.cancel(BrokerServiceException(e))
-            else -> sender.cancel(CancellationException(e))
-          }
+          sender.cancel(BrokerServiceException(e))
         }
         .collect { connection ->
           logger.debug("Received connection info for service #${connection.serviceId}")
