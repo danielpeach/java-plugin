@@ -19,6 +19,40 @@ dependencies {
   testRuntime "org.junit.platform:junit-platform-commons:1.5.2"
 }
 
+publishing {
+  publications {
+    nebula {
+      pom {
+        description.set("Java Plugin")
+        url.set("https://github.com/danielpeach/java-plugin")
+        licenses {
+          license {
+            name.set("The Apache License, Version 2.0")
+            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+          }
+        }
+        developers {
+          developer {
+            id.set("danielpeach")
+            name.set("Dan Peach")
+            email.set("peach.daniel at gmail.com")
+          }
+        }
+        inceptionYear.set("2021")
+        scm {
+          connection.set("scm:git:git://github.com/danielpeach/java-plugin.git")
+          developerConnection.set("scm:git:ssh://github.com/danielpeach/java-plugin.git")
+          url.set("http://github.com/danielpeach/java-plugin/")
+        }
+        issueManagement {
+          system.set("GitHub Issues")
+          url.set("https://github.com/danielpeach/java-plugin/issues")
+        }
+      }
+    }
+  }
+}
+
 jacocoTestReport {
   dependsOn test
   reports {

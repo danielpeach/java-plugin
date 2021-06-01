@@ -4,6 +4,7 @@ plugins {
   id "com.diffplug.spotless" version "5.12.4" apply false
   id "org.jetbrains.dokka" version "1.4.32" apply false
   id "nebula.maven-publish" version "17.3.2" apply false
+  id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 allprojects {
@@ -107,3 +108,11 @@ subprojects {
   }
 }
 
+nexusPublishing {
+  repositories {
+    nexus {
+      nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+    }
+  }
+}
