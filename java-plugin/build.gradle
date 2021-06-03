@@ -2,6 +2,7 @@ dependencies {
   apply plugin: "org.jetbrains.dokka"
   apply plugin: "nebula.maven-publish"
   apply plugin: "jacoco"
+  apply plugin: "signing"
 
   implementation "org.slf4j:slf4j-simple:1.7.29"
   implementation "io.netty:netty-transport-native-kqueue:4.1.52.Final"
@@ -21,36 +22,56 @@ dependencies {
 
 publishing {
   publications {
+    description = "A plugin framework for JVM projects"
     nebula {
       pom {
-        description.set("Java Plugin")
-        url.set("https://github.com/danielpeach/java-plugin")
+        url = "https://github.com/danielpeach/java-plugin"
         licenses {
           license {
-            name.set("The Apache License, Version 2.0")
-            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            name = "The Apache License, Version 2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
           }
         }
         developers {
           developer {
-            id.set("danielpeach")
-            name.set("Dan Peach")
-            email.set("peach.daniel at gmail.com")
+            id = "danielpeach"
+            name = "Dan Peach"
+            email = "peach.daniel at gmail.com"
           }
         }
-        inceptionYear.set("2021")
+        inceptionYear = "2021"
         scm {
-          connection.set("scm:git:git://github.com/danielpeach/java-plugin.git")
-          developerConnection.set("scm:git:ssh://github.com/danielpeach/java-plugin.git")
-          url.set("http://github.com/danielpeach/java-plugin/")
+          connection = "scm:git:git://github.com/danielpeach/java-plugin.git"
+          developerConnection = "scm:git:ssh://github.com/danielpeach/java-plugin.git"
+          url = "http://github.com/danielpeach/java-plugin/"
         }
         issueManagement {
-          system.set("GitHub Issues")
-          url.set("https://github.com/danielpeach/java-plugin/issues")
+          system = "GitHub Issues"
+          url = "https://github.com/danielpeach/java-plugin/issues"
         }
       }
+
+      def javadocTask = tasks.findByName("dokkaJavadoc")
+      def dokkaJar = project.task(type: Jar, "dokkaJar") {
+        archiveClassifier.set("javadoc")
+        from(javadocTask)
+      }
+      artifact(dokkaJar)
+
+      def sourceJar = project.task(type: Jar, "sourceJar") {
+        archiveClassifier.set("sources")
+        from sourceSets.main.allSource
+      }
+      artifact(sourceJar)
     }
   }
+}
+
+signing {
+  def key = project.hasProperty("signingKey") ? project.getProperty("signingKey") : ""
+  def password = project.hasProperty("signingPassword") ? project.getProperty("signingPassword") : ""
+  useInMemoryPgpKeys(key, password)
+  sign(publishing.publications["nebula"])
 }
 
 jacocoTestReport {

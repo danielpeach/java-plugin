@@ -14,7 +14,7 @@ internal fun logPlugin(raw: String) {
   logWithLogger(l, raw)
 }
 
-sealed class LogLine
+internal sealed class LogLine
 
 private data class StructuredLogLine(
   @JsonProperty("@level") val level: String,

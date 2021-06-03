@@ -39,3 +39,6 @@ out/
 .vagrant
 *.log
 kv_*
+
+pgp.key
+nexus_publish.sh
