@@ -12,19 +12,15 @@ import java.math.BigInteger
 import java.security.*
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
-import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
 import javax.net.ssl.TrustManagerFactory
 
 private const val SHA_256 = "SHA-256"
-private const val BEGIN_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----"
-private const val END_PRIVATE_KEY = "-----END PRIVATE KEY-----"
 private const val BEGIN_CERT = "-----BEGIN CERTIFICATE-----"
 private const val END_CERT = "-----END CERTIFICATE-----"
 private val LINE_SEPARATOR: String = System.getProperty("line.separator")
 
-/** Parses a base64-encoded X.509 certificate. */
-internal fun parseEncodedCertificate(cert: String): X509Certificate {
+internal fun parseBase64EncodedCertificate(cert: String): X509Certificate {
   return parseCertificate(Base64.getDecoder().decode(cert).inputStream())
 }
 
@@ -35,16 +31,6 @@ internal fun parseCertificate(cert: String): X509Certificate {
 internal fun parseCertificate(cert: InputStream): X509Certificate {
   val factory = CertificateFactory.getInstance("X.509")
   return factory.generateCertificate(cert) as X509Certificate
-}
-
-internal fun parsePEMKey(raw: String): PrivateKey {
-  return raw
-    .replace(BEGIN_PRIVATE_KEY, "")
-    .replace(END_PRIVATE_KEY, "")
-    .replace(LINE_SEPARATOR, "")
-    .let { Base64.getDecoder().decode(it) }
-    .let { PKCS8EncodedKeySpec(it) }
-    .let { KeyFactory.getInstance("EC").generatePrivate(it) }
 }
 
 internal fun fingerprintCertificate(certificate: ByteArray, algorithm: String): String {

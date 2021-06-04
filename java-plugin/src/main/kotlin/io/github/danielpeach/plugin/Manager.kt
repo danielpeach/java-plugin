@@ -178,7 +178,7 @@ class Manager {
     val serverCertificate = split.getOrNull(5)?.let {
       if (it == "") return@let null
 
-      val cert = parseEncodedCertificate(it)
+      val cert = parseBase64EncodedCertificate(it)
       cert.checkValidity()
       cert
     }
