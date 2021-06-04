@@ -72,8 +72,6 @@ class Broker internal constructor(
    * @param [services] The gRPC services that the [Broker] should serve.
    *
    * @returns [Server] A gRPC server that implements the provided [services].
-   *
-   * @throws [BrokerServiceException]
    * */
   fun acceptAndServe(serviceId: Int, vararg services: BindableService): Server = runBlocking(scope.coroutineContext) {
     val server = channelProvider.server("unix", *services).start()
@@ -112,7 +110,7 @@ class Broker internal constructor(
       stub
         .startStream(sender.consumeAsFlow())
         .catch { e ->
-          sender.cancel(BrokerServiceException(e))
+          sender.cancel(CancellationException(e))
         }
         .collect { connection ->
           logger.debug("Received connection info for service #${connection.serviceId}")

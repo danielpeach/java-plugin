@@ -6,6 +6,7 @@ import io.grpc.Server
 import io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
+import io.netty.channel.ChannelOption
 import io.netty.channel.epoll.EpollDomainSocketChannel
 import io.netty.channel.epoll.EpollEventLoopGroup
 import io.netty.channel.epoll.EpollServerDomainSocketChannel
@@ -36,24 +37,27 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
       throw IllegalArgumentException("Network type '$network' is not supported.")
     }
 
-    val (builder, shutdownHook) = when (val os = System.getProperty("os.name")) {
+    val builder = NettyChannelBuilder.forAddress(DomainSocketAddress(address))
+      .withOption(ChannelOption.SO_KEEPALIVE, null)
+
+    val shutdownHook = when (val os = System.getProperty("os.name")) {
       MAC_OS -> {
         val kqg = KQueueEventLoopGroup()
-        val builder =
-          NettyChannelBuilder.forAddress(DomainSocketAddress(address))
-            .eventLoopGroup(kqg)
-            .channelType(KQueueDomainSocketChannel::class.java)
 
-        builder to { kqg.shutdownGracefully() }
+        builder
+          .eventLoopGroup(kqg)
+          .channelType(KQueueDomainSocketChannel::class.java);
+
+        { kqg.shutdownGracefully() }
       }
       LINUX -> {
         val elg = EpollEventLoopGroup()
-        val builder =
-          NettyChannelBuilder.forAddress(DomainSocketAddress(address))
-            .eventLoopGroup(elg)
-            .channelType(EpollDomainSocketChannel::class.java)
 
-        builder to { elg.shutdownGracefully() }
+        builder
+          .eventLoopGroup(elg)
+          .channelType(EpollDomainSocketChannel::class.java);
+
+        { elg.shutdownGracefully() }
       }
       else -> throw IllegalArgumentException("OS '$os' is not supported.")
     }
@@ -103,18 +107,20 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
       throw IllegalArgumentException("Network type '$network' is not supported.")
     }
 
-    val (builder, shutdownHook) = when (val os = System.getProperty("os.name")) {
+    val builder = NettyServerBuilder.forAddress(DomainSocketAddress(address))
+      .withChildOption(ChannelOption.SO_KEEPALIVE, null)
+
+    val shutdownHook = when (val os = System.getProperty("os.name")) {
       MAC_OS -> {
         val boss = KQueueEventLoopGroup()
         val worker = KQueueEventLoopGroup()
 
-        val builder =
-          NettyServerBuilder.forAddress(DomainSocketAddress(address))
-            .bossEventLoopGroup(boss)
-            .workerEventLoopGroup(worker)
-            .channelType(KQueueServerDomainSocketChannel::class.java)
+        builder
+          .bossEventLoopGroup(boss)
+          .workerEventLoopGroup(worker)
+          .channelType(KQueueServerDomainSocketChannel::class.java);
 
-        builder to {
+        {
           boss.shutdownGracefully()
           worker.shutdownGracefully()
         }
@@ -123,13 +129,12 @@ internal class ChannelProvider(private val mTLSConfig: MTLSConfig? = null) {
         val boss = EpollEventLoopGroup()
         val worker = EpollEventLoopGroup()
 
-        val builder =
-          NettyServerBuilder.forAddress(DomainSocketAddress(address))
-            .bossEventLoopGroup(boss)
-            .workerEventLoopGroup(worker)
-            .channelType(EpollServerDomainSocketChannel::class.java)
+        builder
+          .bossEventLoopGroup(boss)
+          .workerEventLoopGroup(worker)
+          .channelType(EpollServerDomainSocketChannel::class.java);
 
-        builder to {
+        {
           boss.shutdownGracefully()
           worker.shutdownGracefully()
         }

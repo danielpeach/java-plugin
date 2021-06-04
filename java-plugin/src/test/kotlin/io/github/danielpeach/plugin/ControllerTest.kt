@@ -18,7 +18,7 @@ class ControllerTest : JUnit5Minutests {
 
     after {
       if (!controllerServer.isShutdown) {
-        controllerServer.shutdown()
+        controllerServer.shutdownAndAwait()
       }
     }
 
@@ -62,8 +62,7 @@ class ControllerTest : JUnit5Minutests {
       .start()
       .also { server ->
         controllerService.shutdownHook = {
-          server.shutdownNow()
-          server.awaitTermination()
+          server.shutdownAndAwait()
         }
       }
 

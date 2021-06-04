@@ -46,7 +46,7 @@ class BrokerTest : JUnit5Minutests {
       }
     }
 
-    test("acceptAndServe throws a BrokerServiceException when the broker server is not running") {
+    test("acceptAndServe throws a CancellationException when the broker server is not running") {
       // Client
       brokerClient.start()
 
@@ -54,7 +54,7 @@ class BrokerTest : JUnit5Minutests {
       brokerServer.shutdownAndAwait()
 
       val serviceId = brokerClient.getNextId()
-      expectThrows<BrokerServiceException> {
+      expectThrows<CancellationException> {
         brokerClient.acceptAndServe(serviceId, TestService())
       }
     }
