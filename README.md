@@ -1,5 +1,5 @@
 ![CI](https://github.com/danielpeach/java-plugin/workflows/Build/badge.svg)
-
+[![javadoc](https://javadoc.io/badge2/io.github.danielpeach.java-plugin/java-plugin/javadoc.svg)](https://javadoc.io/doc/io.github.danielpeach.java-plugin/java-plugin)
 # Java Plugin
 
 `java-plugin` is a client-side implementation of
